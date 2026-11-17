@@ -5,6 +5,7 @@ on:
     branches: [release/0.3.3-beta]
     paths:
       - 'elite-s2-PS5-0.3.3-beta.zip'
+      - 'gui-polish.patch'
       - '.github/workflows/build.yml'
   workflow_dispatch:
 
@@ -18,13 +19,18 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Extract versioned source archive
+      - name: Extract baseline source archive
         run: |
           test -s elite-s2-PS5-0.3.3-beta.zip
           mkdir -p build-src
           unzip -q elite-s2-PS5-0.3.3-beta.zip -d build-src
           test -f build-src/Makefile
-          grep -q '0.3.3-beta' build-src/src/version.h
+
+      - name: Apply beta.1 GUI polish
+        run: |
+          test -s gui-polish.patch
+          git apply --directory=build-src gui-polish.patch
+          grep -q '0.3.3-beta.1' build-src/src/version.h
 
       - name: Patch Prospero socket header include
         run: |
@@ -69,22 +75,23 @@ jobs:
 
       - name: Package patched source tree
         run: |
-          (cd build-src && zip -qr ../elite-s2-PS5-0.3.3-beta-patched-source.zip . -x 'build/*' 'dist/*')
+          (cd build-src && zip -qr ../elite-s2-PS5-0.3.3-beta.1-patched-source.zip . -x 'build/*' 'dist/*')
 
       - name: Verify ELF and write checksum
         working-directory: build-src
         run: |
-          ELF="dist/PadBridge-PS5-0.3.3-beta.elf"
+          ELF="dist/PadBridge-PS5-0.3.3-beta.1.elf"
           test -s "$ELF"
           sha256sum "$ELF" | tee "$ELF.sha256"
 
       - name: Upload ELF and source artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: elite-s2-PS5-0.3.3-beta
+          name: elite-s2-PS5-0.3.3-beta.1
           path: |
-            build-src/dist/PadBridge-PS5-0.3.3-beta.elf
-            build-src/dist/PadBridge-PS5-0.3.3-beta.elf.sha256
+            build-src/dist/PadBridge-PS5-0.3.3-beta.1.elf
+            build-src/dist/PadBridge-PS5-0.3.3-beta.1.elf.sha256
             elite-s2-PS5-0.3.3-beta.zip
-            elite-s2-PS5-0.3.3-beta-patched-source.zip
+            elite-s2-PS5-0.3.3-beta.1-patched-source.zip
+            gui-polish.patch
           if-no-files-found: error
