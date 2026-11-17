@@ -1,0 +1,66 @@
+--- a/Makefile
++++ b/Makefile
+@@ -30,7 +30,7 @@
+ 
+ # The page against a host with a simulated pad, to look at in a browser on port 18096: make demo
+ demo: $(CORE) $(WEB) tests/sim.c tests/web_demo.c | $(BUILD)
+-	cc $(HOST_CFLAGS) -o $(BUILD)/web_demo $^
++	cc $(HOST_CFLAGS) -o $(BUILD)/web_demo $^ -lm
+ 	./$(BUILD)/web_demo
+ 
+ $(BUILD)/test_host: $(CORE) tests/sim.c tests/test_host.c | $(BUILD)
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -1,5 +1,14 @@
+ # Changelog
+ 
++## 0.3.3-beta.1 — responsive PadBridge control panel
++
++- Kept the existing on-console and browser-based control panel as the single GUI for PS5, phone, tablet, and desktop use.
++- Fixed controller-card grid sizing so connected-controller cards shrink to the available viewport instead of forcing horizontal overflow on narrow phones.
++- Added compact small-screen spacing and header wrapping for phone-sized displays.
++- Fixed the host `make demo` target to link the math library required by its simulated live controller animation.
++- No Bluetooth, HID, paddle mapping, profile storage, or PS5 runtime behavior changed.
++- Host tests, parser fuzz tests, and browser-side JavaScript syntax checks are required before release; real PS5 / Elite Series 2 testing remains outstanding.
++
+ ## 0.3.3-beta — game-state protocol verification and test reliability
+ 
+ - Expanded the game-state client test from an unavailable-daemon smoke test to a local TCP protocol fixture: validates the request packet, decodes the v1 response fields, and rejects non-zero status and unsupported protocol versions.
+--- a/src/version.h
++++ b/src/version.h
+@@ -7,7 +7,7 @@
+ 
+ /* One #define line only: ps5.mk reads the version from it. */
+ #ifndef PADBRIDGE_VERSION
+-#define PADBRIDGE_VERSION "0.3.3-beta"
++#define PADBRIDGE_VERSION "0.3.3-beta.1"
+ #endif
+ 
+ #endif
+--- a/web/index.html
++++ b/web/index.html
+@@ -82,7 +82,7 @@
+ .head h2 { margin: 0; font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: 3px; }
+ .head h2:before { content: ""; display: inline-block; width: 10px; height: 10px; background: var(--ember); margin: 0 10px 2px 0; transform: rotate(45deg); }
+ .head span { color: var(--mute); font-size: 14px; }
+-.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); grid-gap: 16px; margin-bottom: 28px; }
++.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); grid-gap: 16px; margin-bottom: 28px; }
+ .card { position: relative; padding: 16px 18px; background: linear-gradient(160deg, var(--card), var(--deck)); border: 2px solid var(--edge); }
+ .card { --acc: var(--lime); }
+ .card { border-top: 4px solid var(--acc); }
+@@ -203,6 +203,15 @@
+ .sub { direction: ltr; }
+ [dir="rtl"] .sub, [dir="rtl"] .by { text-align: right; }
+ 
++@media (max-width: 520px) {
++  .wrap { padding: 14px 12px 28px; }
++  .bar { align-items: flex-start; flex-wrap: wrap; gap: 12px; }
++  .brand h1 { font-size: 20px; letter-spacing: 2px; }
++  .right { width: 100%; justify-content: flex-end; }
++  .live { padding: 7px 11px; font-size: 12px; letter-spacing: 1px; }
++  .panel { padding: 14px; }
++  .head h2 { font-size: 16px; letter-spacing: 2px; }
++}
+ @media (max-width: 900px) {
+   .grid { grid-template-columns: 1fr; }
+   footer { flex-direction: column; align-items: flex-start; }
