@@ -2,7 +2,7 @@
 +++ b/Makefile
 @@ -30,7 +30,7 @@
  
- # The page against a host with a simulated pad, to look at in a browser on port 18096: make demo
+ # The page against a simulated pad, to look at in a browser: make demo
  demo: $(CORE) $(WEB) tests/sim.c tests/web_demo.c | $(BUILD)
 -	cc $(HOST_CFLAGS) -o $(BUILD)/web_demo $^
 +	cc $(HOST_CFLAGS) -o $(BUILD)/web_demo $^ -lm
