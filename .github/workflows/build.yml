@@ -6,6 +6,7 @@ on:
     paths:
       - 'elite-s2-PS5-0.3.3-beta.zip'
       - 'gui-polish.patch'
+      - 'diagnostics-beta2.patch'
       - '.github/workflows/build.yml'
   workflow_dispatch:
 
@@ -30,12 +31,14 @@ jobs:
         run: |
           test -s gui-polish.patch
           git apply --directory=build-src gui-polish.patch
-          grep -q '0.3.3-beta.1' build-src/src/version.h
+          grep -q '0.3.3-beta.2' build-src/src/version.h
 
-      - name: Patch Prospero socket header include
+      - name: Apply beta.2 diagnostics
         run: |
-          test -f build-src/src/game_state.c
-          grep -q '#include <netinet/in.h>' build-src/src/game_state.c || sed -i '1i #include <netinet/in.h>' build-src/src/game_state.c
+          test -s diagnostics-beta2.patch
+          git apply --directory=build-src diagnostics-beta2.patch
+          grep -q '0.3.3-beta.2' build-src/src/version.h
+          python3 build-src/tools/embed.py build-src/web/index.html build-src/src/web_page.c web_page_html
 
       - name: Install host build tools
         run: |
@@ -75,7 +78,7 @@ jobs:
 
       - name: Package patched source tree
         run: |
-          (cd build-src && zip -qr ../elite-s2-PS5-0.3.3-beta.1-patched-source.zip . -x 'build/*' 'dist/*')
+          (cd build-src && zip -qr ../elite-s2-PS5-0.3.3-beta.2-patched-source.zip . -x 'build/*' 'dist/*')
 
       - name: Verify ELF and write checksum
         working-directory: build-src
@@ -87,11 +90,12 @@ jobs:
       - name: Upload ELF and source artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: elite-s2-PS5-0.3.3-beta.1
+          name: elite-s2-PS5-0.3.3-beta.2
           path: |
             build-src/dist/PadBridge-PS5-0.3.3-beta.1.elf
             build-src/dist/PadBridge-PS5-0.3.3-beta.1.elf.sha256
             elite-s2-PS5-0.3.3-beta.zip
             elite-s2-PS5-0.3.3-beta.1-patched-source.zip
             gui-polish.patch
+            diagnostics-beta2.patch
           if-no-files-found: error
