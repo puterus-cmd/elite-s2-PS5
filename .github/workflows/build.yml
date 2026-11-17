@@ -33,6 +33,11 @@ jobs:
           git apply --directory=build-src gui-polish.patch
           grep -q '0.3.3-beta.1' build-src/src/version.h
 
+      - name: Patch Prospero socket header include
+        run: |
+          test -f build-src/src/game_state.c
+          grep -q '#include <netinet/in.h>' build-src/src/game_state.c || sed -i '1i #include <netinet/in.h>' build-src/src/game_state.c
+
       - name: Apply beta.2 diagnostics
         run: |
           test -s diagnostics-beta2.patch
