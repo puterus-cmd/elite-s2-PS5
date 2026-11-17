@@ -31,7 +31,7 @@ jobs:
         run: |
           test -s gui-polish.patch
           git apply --directory=build-src gui-polish.patch
-          grep -q '0.3.3-beta.2' build-src/src/version.h
+          grep -q '0.3.3-beta.1' build-src/src/version.h
 
       - name: Apply beta.2 diagnostics
         run: |
@@ -83,7 +83,7 @@ jobs:
       - name: Verify ELF and write checksum
         working-directory: build-src
         run: |
-          ELF="dist/PadBridge-PS5-0.3.3-beta.1.elf"
+          ELF="dist/PadBridge-PS5-0.3.3-beta.2.elf"
           test -s "$ELF"
           sha256sum "$ELF" | tee "$ELF.sha256"
 
@@ -92,10 +92,10 @@ jobs:
         with:
           name: elite-s2-PS5-0.3.3-beta.2
           path: |
-            build-src/dist/PadBridge-PS5-0.3.3-beta.1.elf
-            build-src/dist/PadBridge-PS5-0.3.3-beta.1.elf.sha256
+            build-src/dist/PadBridge-PS5-0.3.3-beta.2.elf
+            build-src/dist/PadBridge-PS5-0.3.3-beta.2.elf.sha256
             elite-s2-PS5-0.3.3-beta.zip
-            elite-s2-PS5-0.3.3-beta.1-patched-source.zip
+            elite-s2-PS5-0.3.3-beta.2-patched-source.zip
             gui-polish.patch
             diagnostics-beta2.patch
           if-no-files-found: error
