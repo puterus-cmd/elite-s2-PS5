@@ -26,6 +26,11 @@ jobs:
           test -f build-src/Makefile
           grep -q '0.3.3-beta' build-src/src/version.h
 
+      - name: Patch Prospero socket header include
+        run: |
+          test -f build-src/src/game_state.c
+          grep -q '#include <netinet/in.h>' build-src/src/game_state.c || sed -i '1i #include <netinet/in.h>' build-src/src/game_state.c
+
       - name: Install host build tools
         run: |
           sudo apt-get update
@@ -62,6 +67,10 @@ jobs:
         working-directory: build-src
         run: make ps5
 
+      - name: Package patched source tree
+        run: |
+          (cd build-src && zip -qr ../elite-s2-PS5-0.3.3-beta-patched-source.zip . -x 'build/*' 'dist/*')
+
       - name: Verify ELF and write checksum
         working-directory: build-src
         run: |
@@ -77,4 +86,5 @@ jobs:
             build-src/dist/PadBridge-PS5-0.3.3-beta.elf
             build-src/dist/PadBridge-PS5-0.3.3-beta.elf.sha256
             elite-s2-PS5-0.3.3-beta.zip
+            elite-s2-PS5-0.3.3-beta-patched-source.zip
           if-no-files-found: error
