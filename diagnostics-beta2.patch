@@ -16,15 +16,6 @@ index a40f1f7..d526b9c 100644
  ## 0.3.3-beta.1 — responsive PadBridge control panel
  
  - Kept the existing on-console and browser-based control panel as the single GUI for PS5, phone, tablet, and desktop use.
-diff --git a/src/game_state.c b/src/game_state.c
-index d499458..cd91c0b 100644
---- a/src/game_state.c
-+++ b/src/game_state.c
-@@ -1,4 +1,3 @@
--#include <netinet/in.h>
- #include "game_state.h"
- 
- #include <arpa/inet.h>
 diff --git a/src/log.c b/src/log.c
 index 4d740a9..7e46716 100644
 --- a/src/log.c
