@@ -41,7 +41,7 @@ jobs:
       - name: Apply beta.2 diagnostics
         run: |
           test -s diagnostics-beta2.patch
-          git apply --directory=build-src diagnostics-beta2.patch
+          git apply --recount --directory=build-src diagnostics-beta2.patch
           grep -q '0.3.3-beta.2' build-src/src/version.h
           python3 build-src/tools/embed.py build-src/web/index.html build-src/src/web_page.c web_page_html
 
